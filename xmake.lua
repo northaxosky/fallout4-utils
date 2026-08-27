@@ -58,4 +58,14 @@ target(plugin_name, function()
         "PLUGIN_VERSION_MINOR=" .. plugin_version_minor,
         "PLUGIN_VERSION_PATCH=" .. plugin_version_patch
     )
+
+    -- the commonlib rule derives installdir from the target name inside its own on_config,
+    -- which cannot express a mod folder named differently; claim it afterwards
+    on_config(function(target)
+        local deploy_path = os.getenv("FO4_DEV_DEPLOY")
+
+        if deploy_path then
+            target:set("installdir", deploy_path)
+        end
+    end)
 end)

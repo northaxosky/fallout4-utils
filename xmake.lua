@@ -18,9 +18,6 @@ set_encodings("utf-8")
 -- set policies
 set_policy("build.optimization.lto", true)
 
--- add dependencies
-add_requires("nlohmann_json v3.12.0")
-
 -- add common rules
 add_rules("mode.debug", "mode.release", "mode.releasedbg")
 add_rules("plugin.vsxmake.autoupdate")
@@ -43,7 +40,7 @@ target(plugin_name, function()
     add_rules("commonlibf4.plugin", {
         name = plugin_name,
         author = "Kuz",
-        description = "Discord Rich Presence for Fallout 4",
+        description = "In-game development and testing utilities for Fallout 4",
         plugin_template = "res/commonlibf4-plugin.cpp.in"
     })
 
@@ -51,8 +48,6 @@ target(plugin_name, function()
     add_files("src/**.cpp")
     add_headerfiles("src/**.h")
     add_includedirs("src")
-    add_installfiles("data/F4SE/Plugins/Fallout4RichPresence.toml", { prefixdir = "F4SE/Plugins" })
-    add_packages("nlohmann_json")
     set_pcxxheader("src/pch.h")
 
     -- pass name and version
@@ -64,41 +59,3 @@ target(plugin_name, function()
         "PLUGIN_VERSION_PATCH=" .. plugin_version_patch
     )
 end)
-
--- assemble the layout a mod manager installs, identical to the CI artifact
-task("package", function()
-    set_menu({
-        usage = "xmake package",
-        description = "Assemble the installable mod layout into dist/"
-    })
-
-    on_run(function()
-        import("core.project.config")
-        config.load()
-
-        local mode = config.get("mode") or "releasedbg"
-        local build = path.join("build", "windows", "x64", mode)
-        local root = "dist"
-        local plugins = path.join(root, "F4SE", "Plugins")
-
-        os.mkdir(plugins)
-
-        for _, name in ipairs({ "Fallout4RichPresence.dll", "Fallout4RichPresence.pdb" }) do
-            local file = path.join(build, name)
-            assert(os.isfile(file), name .. " not found in " .. build .. "; run xmake build first")
-            os.cp(file, plugins)
-        end
-
-        -- overwrite only what we own, so a local Custom.toml survives repackaging
-        os.cp("data/F4SE/Plugins/Fallout4RichPresence.toml", plugins)
-        os.cp("data/presets", root)
-        os.cp("data/fomod", root)
-
-        cprint("${bright green}packaged${clear} %s", path.absolute(root))
-    end)
-end)
-
-
-
-
-

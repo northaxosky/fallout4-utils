@@ -21,6 +21,7 @@ set_policy("build.optimization.lto", true)
 -- add common rules
 add_rules("mode.debug", "mode.release", "mode.releasedbg")
 add_rules("plugin.vsxmake.autoupdate")
+add_rules("plugin.compile_commands.autoupdate", { lsp = "clangd" })
 
 -- add options
 set_config("commonlib_toml", true)

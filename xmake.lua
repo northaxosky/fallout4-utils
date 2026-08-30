@@ -33,6 +33,19 @@ for _, dep in ipairs({ "commonlib-shared", "commonlibf4" }) do
     end)
 end
 
+-- pinned Dear ImGUI: the DMUI host rejects when build doesn't match
+target("imgui", function()
+    set_kind("static")
+    set_default("false")
+    add_files(
+        "lib/imgui/imgui.cpp",
+        "lib/imgui/imgui_draw.cpp",
+        "lib/imgui/imgui_tables.cpp",
+        "lib/imgui/imgui_widgets.cpp"
+    )
+    add_includedirs("lib/imgui", { public = true })
+end)
+
 -- define targets
 target(plugin_name, function()
     add_cxxflags("/permissive-", "/Zc:preprocessor", { public = true })
@@ -46,9 +59,11 @@ target(plugin_name, function()
     })
 
     -- add src files
+    add_deps("imgui")
     add_files("src/**.cpp")
     add_headerfiles("src/**.h")
     add_includedirs("src")
+    add_includedirs("include")
     set_pcxxheader("src/pch.h")
 
     -- pass name and version

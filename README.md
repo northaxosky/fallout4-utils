@@ -28,17 +28,16 @@ cloned without submodules, run `git submodule update --init --recursive` first. 
 
 ## Installing
 
-`xmake install` copies the plugin and its symbols into `F4SE/Plugins` under an install root taken
-from the first variable that is set:
+`xmake install` copies the plugin and its symbols into `F4SE/Plugins` under the first variable
+that is set:
 
 | Variable | Install root |
 | --- | --- |
-| `FO4_DEV_DEPLOY` | Used verbatim, so the mod folder may carry any name. |
-| `XSE_FO4_MODS_PATH` | A mod manager's mods directory, plus a folder named after the target. |
+| `FO4_DEV_MODS` | A mods root, plus `Utils - Dev`. |
+| `XSE_FO4_MODS_PATH` | A mods root, plus a folder named after the target. |
 | `XSE_FO4_GAME_PATH` | The Fallout 4 install directory, plus `Data`. |
 
-Prefer `releasedbg` for testing. The `release` mode emits no PDB, and crash loggers need one to
-resolve symbols.
+Prefer `releasedbg`: `release` emits no PDB, and crash loggers need one.
 
 ## License
 

@@ -6,6 +6,9 @@ local plugin_name = "Fallout4Utils"
 local plugin_version = "0.1.0"
 local plugin_version_major, plugin_version_minor, plugin_version_patch = plugin_version:match("^(%d+)%.(%d+)%.(%d+)$")
 
+-- mod manager folder for xmake install, joined onto FO4_DEV_MODS
+local dev_mod_folder = "Utils - Dev"
+
 -- set project constants
 set_project(plugin_name)
 set_version(plugin_version)
@@ -33,19 +36,6 @@ for _, dep in ipairs({ "commonlib-shared", "commonlibf4" }) do
     end)
 end
 
--- pinned Dear ImGUI: the DMUI host rejects when build doesn't match
-target("imgui", function()
-    set_kind("static")
-    set_default("false")
-    add_files(
-        "lib/imgui/imgui.cpp",
-        "lib/imgui/imgui_draw.cpp",
-        "lib/imgui/imgui_tables.cpp",
-        "lib/imgui/imgui_widgets.cpp"
-    )
-    add_includedirs("lib/imgui", { public = true })
-end)
-
 -- define targets
 target(plugin_name, function()
     add_cxxflags("/permissive-", "/Zc:preprocessor", { public = true })
@@ -59,11 +49,9 @@ target(plugin_name, function()
     })
 
     -- add src files
-    add_deps("imgui")
     add_files("src/**.cpp")
     add_headerfiles("src/**.h")
     add_includedirs("src")
-    add_includedirs("include")
     set_pcxxheader("src/pch.h")
 
     -- pass name and version
@@ -78,10 +66,10 @@ target(plugin_name, function()
     -- the commonlib rule derives installdir from the target name inside its own on_config,
     -- which cannot express a mod folder named differently; claim it afterwards
     on_config(function(target)
-        local deploy_path = os.getenv("FO4_DEV_DEPLOY")
+        local mods_root = os.getenv("FO4_DEV_MODS")
 
-        if deploy_path then
-            target:set("installdir", deploy_path)
+        if mods_root then
+            target:set("installdir", path.join(mods_root, dev_mod_folder))
         end
     end)
 end)
